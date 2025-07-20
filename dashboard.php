@@ -1,7 +1,6 @@
 <?php
 session_start();
 
-// Redirect if not logged in
 if (!isset($_SESSION['username'])) {
   header("Location: login.php");
   exit;
@@ -10,12 +9,11 @@ if (!isset($_SESSION['username'])) {
 $username = $_SESSION['username'];
 $role = $_SESSION['role'];
 
-// Load transactions
 $transactionsData = file_exists(__DIR__.'/transactions.json')
   ? json_decode(file_get_contents(__DIR__.'/transactions.json'), true)
   : ['transactions' => []];
 
-$allTransactions = $transactionsData['transactions'];
+$allTransactions = $transactionsData['transactions'] ?? [];
 $userTransactions = array_filter($allTransactions, fn($txn) => $txn['username'] === $username);
 
 // Admin only: count users

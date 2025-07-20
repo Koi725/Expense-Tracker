@@ -1,14 +1,19 @@
 {
-  "users": [
-    {
-      "username": "Admin",
-      "password": "12345",
-      "role": "admin"
-    },
-    {
-      "username": "Kousha",
-      "password": "Kousha$1382",
-      "role": "user"
-    }
-  ]
+    "users": [
+        {
+            "username": "Admin",
+            "password": "12345",
+            "role": "admin"
+        },
+        {
+            "username": "Kousha",
+            "password": "Kousha$1382",
+            "role": "user"
+        },
+        {
+            "username": "haji",
+            "password": "Haji1234%",
+            "role": "user"
+        }
+    ]
 }

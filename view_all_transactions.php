@@ -12,7 +12,8 @@ $file = __DIR__ . '/transactions.json';
 $transactions = [];
 
 if (file_exists($file)) {
-  $transactions = json_decode(file_get_contents($file), true);
+  $data = json_decode(file_get_contents($file), true);
+  $transactions = $data['transactions'] ?? [];
 }
 ?>
 
@@ -90,7 +91,7 @@ if (file_exists($file)) {
         <tbody>
           <?php foreach ($transactions as $tx): ?>
             <tr>
-              <td><?= htmlspecialchars($tx['owner']) ?></td>
+              <td><?= htmlspecialchars($tx['username']) ?></td>
               <td><?= htmlspecialchars($tx['amount']) ?></td>
               <td><?= ucfirst($tx['type']) ?></td>
               <td><?= htmlspecialchars($tx['description']) ?></td>

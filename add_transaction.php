@@ -17,25 +17,31 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
   $date = $_POST['date'] ?? '';
 
   if (empty($amount) || empty($type) || empty($description) || empty($date)) {
-    $error = "All Field are required..!";
+    $error = "All fields are required!";
   } else {
     $file = __DIR__ . '/transactions.json';
-    $transactions = [];
 
+    // Initialize structure
+    $data = ['transactions' => []];
     if (file_exists($file)) {
-      $transactions = json_decode(file_get_contents($file), true);
+      $data = json_decode(file_get_contents($file), true);
+      if (!isset($data['transactions']) || !is_array($data['transactions'])) {
+        $data['transactions'] = [];
+      }
     }
 
-    $transactions[] = [
-      'owner' => get_current_user(), 
+    // Append to transactions array
+    $data['transactions'][] = [
+      'username' => $_SESSION['username'],
       'amount' => (float)$amount,
       'type' => $type,
       'description' => $description,
       'date' => $date
     ];
 
-    file_put_contents($file, json_encode($transactions, JSON_PRETTY_PRINT));
-    $success = "Transaction added successfully..✅";
+    // Save back to JSON
+    file_put_contents($file, json_encode($data, JSON_PRETTY_PRINT));
+    $success = "Transaction added successfully ✅";
   }
 }
 ?>

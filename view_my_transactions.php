@@ -1,21 +1,21 @@
 <?php
-require_once 'includes/auth.php';
 session_start();
 
-// Make sure user is logged in
-if (!is_logged_in()) {
+if (!isset($_SESSION['username'])) {
   header("Location: login.php");
   exit;
 }
 
-$currentUser = get_current_user();
+$currentUser = $_SESSION['username'];
 $transactions = [];
 
 $file = __DIR__ . '/transactions.json';
 if (file_exists($file)) {
-  $allTransactions = json_decode(file_get_contents($file), true);
-  foreach ($allTransactions as $tx) {
-    if ($tx['owner'] === $currentUser) {
+  $data = json_decode(file_get_contents($file), true);
+  $allTx = $data['transactions'] ?? [];
+
+  foreach ($allTx as $tx) {
+    if ($tx['username'] === $currentUser) {
       $transactions[] = $tx;
     }
   }
@@ -87,7 +87,6 @@ if (file_exists($file)) {
         <thead>
           <tr>
             <th>Amount</th>
-            <th>Type</th>
             <th>Description</th>
             <th>Date</th>
           </tr>
@@ -96,7 +95,6 @@ if (file_exists($file)) {
           <?php foreach ($transactions as $tx): ?>
             <tr>
               <td><?= htmlspecialchars($tx['amount']) ?></td>
-              <td><?= ucfirst($tx['type']) ?></td>
               <td><?= htmlspecialchars($tx['description']) ?></td>
               <td><?= htmlspecialchars($tx['date']) ?></td>
             </tr>
