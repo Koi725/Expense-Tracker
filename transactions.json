@@ -1,3 +1,10 @@
 {
-  "transactions":[]
+    "transactions": [],
+    "0": {
+        "owner": "micro",
+        "amount": 5000,
+        "type": "income",
+        "description": "first one try ",
+        "date": "2025-07-26"
+    }
 }

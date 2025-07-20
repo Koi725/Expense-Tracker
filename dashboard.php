@@ -1,6 +1,7 @@
 <?php
 session_start();
 
+// Redirect if not logged in
 if (!isset($_SESSION['username'])) {
   header("Location: login.php");
   exit;
@@ -9,17 +10,24 @@ if (!isset($_SESSION['username'])) {
 $username = $_SESSION['username'];
 $role = $_SESSION['role'];
 
-$transactionsData = json_decode(file_get_contents(__DIR__.'/transactions.json'), true);
+// Load transactions
+$transactionsData = file_exists(__DIR__.'/transactions.json')
+  ? json_decode(file_get_contents(__DIR__.'/transactions.json'), true)
+  : ['transactions' => []];
 
-$userTransactions = array_filter($transactionsData['transactions'], function($txn) use ($username) {
-  return $txn['username'] === $username;
-});
+$allTransactions = $transactionsData['transactions'];
+$userTransactions = array_filter($allTransactions, fn($txn) => $txn['username'] === $username);
 
+// Admin only: count users
 $totalUsers = 0;
 if ($role === 'admin') {
-  $usersData = json_decode(file_get_contents(__DIR__.'/users.json'), true);
+  $usersData = file_exists(__DIR__.'/users.json')
+    ? json_decode(file_get_contents(__DIR__.'/users.json'), true)
+    : ['users' => []];
   $totalUsers = count($usersData['users']);
 }
+
+$totalTransactions = count($allTransactions);
 ?>
 <!DOCTYPE html>
 <html lang="en">
@@ -39,13 +47,16 @@ if ($role === 'admin') {
       border-radius: 12px;
       box-shadow: 0 0 8px rgba(0,0,0,0.1);
     }
-    h2 {
+    h2, h3 {
       color: #333;
     }
     a {
       text-decoration: none;
       color: blue;
       font-weight: bold;
+    }
+    a:hover {
+      color: darkblue;
     }
     .admin {
       background-color: #ffe0e0;
@@ -54,6 +65,12 @@ if ($role === 'admin') {
       position: absolute;
       top: 20px;
       right: 20px;
+    }
+    ul {
+      padding-left: 20px;
+    }
+    li {
+      margin-bottom: 8px;
     }
   </style>
 </head>
@@ -69,8 +86,8 @@ if ($role === 'admin') {
   <?php if ($role === 'admin'): ?>
     <div class="card">
       <h3>👥 Total Registered Users: <?= $totalUsers ?></h3>
-      <h3>💳 Total Transactions: <?= count($transactionsData['transactions']) ?></h3>
-      <a href="view_all_transactions.php">📊 View All Transactions</a>
+      <h3>💳 Total Transactions: <?= $totalTransactions ?></h3>
+      <p><a href="view_all_transactions.php">📊 View All Transactions</a></p>
     </div>
   <?php else: ?>
     <div class="card">
@@ -85,7 +102,8 @@ if ($role === 'admin') {
         </ul>
       <?php endif; ?>
       <br>
-      <a href="add_transaction.php">➕ Add New Transaction</a>
+      <a href="add_transaction.php">➕ Add New Transaction</a><br><br>
+      <a href="view_my_transactions.php">📋 View My Transactions</a>
     </div>
   <?php endif; ?>
 

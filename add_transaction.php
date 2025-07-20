@@ -103,14 +103,14 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
   <div class="form-container">
     <h2>Adding Transaction</h2>
     <form method="POST">
-      <input type="number" step="0.01" name="amount" placeholder="مبلغ" required>
+      <input type="number" step="0.01" name="amount" placeholder="Amount" required>
       <select name="type" required>
         <option value="">Transaction Type</option>
         <option value="income">Incoming</option>
         <option value="expense">Amount</option>
       </select>
       <input type="date" name="date" required>
-      <textarea name="description" placeholder="توضیحات" required></textarea>
+      <textarea name="description" placeholder="Explaination" required></textarea>
       <button type="submit">Submit Transaction </button>
     </form>
 
