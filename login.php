@@ -8,7 +8,7 @@ function login_check($username, $password) {
 
   foreach ($users as $user) {
     if ($user['username'] === $username && $user['password'] === $password) {
-      return $user;  // ✅ برگردوندن خود user
+      return $user; 
     }
   }
 
@@ -28,10 +28,9 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     $user = login_check($username, $password);
     if ($user) {
       $_SESSION['username'] = $user['username'];
-      $_SESSION['role'] = $user['role'];  // 🟢 ذخیره نقش
+      $_SESSION['role'] = $user['role']; 
       $success = "✅ Logged in successfully! Welcome {$user['username']}";
 
-      // ✅ انتقال به داشبورد:
       header("Location: dashboard.php");
       exit;
     } else {
