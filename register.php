@@ -21,7 +21,12 @@ function register($username, $password) {
     }
   }
 
-  $users[] = ['username' => $username, 'password' => $password];
+  $users[] = [
+    'username' => $username,
+    'password' => $password,
+    'role'     => 'user' 
+  ];
+
   file_put_contents($file, json_encode(['users' => $users], JSON_PRETTY_PRINT));
   return true;
 }

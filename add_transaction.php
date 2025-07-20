@@ -1,0 +1,127 @@
+<?php
+require_once 'includes/auth.php';
+session_start();
+
+if (!is_logged_in()) {
+  header("Location: login.php");
+  exit;
+}
+
+$error = null;
+$success = null;
+
+if ($_SERVER['REQUEST_METHOD'] === 'POST') {
+  $amount = $_POST['amount'] ?? '';
+  $type = $_POST['type'] ?? '';
+  $description = $_POST['description'] ?? '';
+  $date = $_POST['date'] ?? '';
+
+  if (empty($amount) || empty($type) || empty($description) || empty($date)) {
+    $error = "All Field are required..!";
+  } else {
+    $file = __DIR__ . '/transactions.json';
+    $transactions = [];
+
+    if (file_exists($file)) {
+      $transactions = json_decode(file_get_contents($file), true);
+    }
+
+    $transactions[] = [
+      'owner' => get_current_user(), 
+      'amount' => (float)$amount,
+      'type' => $type,
+      'description' => $description,
+      'date' => $date
+    ];
+
+    file_put_contents($file, json_encode($transactions, JSON_PRETTY_PRINT));
+    $success = "Transaction added successfully..✅";
+  }
+}
+?>
+
+<!DOCTYPE html>
+<html lang="fa">
+<head>
+  <meta charset="UTF-8">
+  <title>Adding Transaction</title>
+  <style>
+    body {
+      background: #f4f4f4;
+      font-family: 'Segoe UI', sans-serif;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      height: 100vh;
+    }
+    .form-container {
+      background: #fff;
+      padding: 30px;
+      border-radius: 12px;
+      box-shadow: 0 0 15px rgba(0,0,0,0.1);
+      width: 400px;
+    }
+    h2 {
+      text-align: center;
+      margin-bottom: 20px;
+    }
+    input, select, textarea {
+      width: 100%;
+      padding: 10px;
+      margin: 10px 0;
+      border-radius: 8px;
+      border: 1px solid #ccc;
+    }
+    button {
+      background: #28a745;
+      color: white;
+      padding: 12px;
+      border: none;
+      border-radius: 8px;
+      width: 100%;
+      cursor: pointer;
+      font-weight: bold;
+    }
+    button:hover {
+      background: #218838;
+    }
+    .message {
+      text-align: center;
+      margin-top: 10px;
+      font-weight: bold;
+    }
+    .back {
+      display: block;
+      text-align: center;
+      margin-top: 20px;
+      color: #007bff;
+      text-decoration: none;
+    }
+  </style>
+</head>
+<body>
+  <div class="form-container">
+    <h2>Adding Transaction</h2>
+    <form method="POST">
+      <input type="number" step="0.01" name="amount" placeholder="مبلغ" required>
+      <select name="type" required>
+        <option value="">Transaction Type</option>
+        <option value="income">Incoming</option>
+        <option value="expense">Amount</option>
+      </select>
+      <input type="date" name="date" required>
+      <textarea name="description" placeholder="توضیحات" required></textarea>
+      <button type="submit">Submit Transaction </button>
+    </form>
+
+    <?php if ($error): ?>
+      <div class="message" style="color: red;"><?= $error ?></div>
+    <?php endif; ?>
+    <?php if ($success): ?>
+      <div class="message" style="color: green;"><?= $success ?></div>
+    <?php endif; ?>
+
+    <a href="dashboard.php" class="back">⬅ Back to dashboard</a>
+  </div>
+</body>
+</html>

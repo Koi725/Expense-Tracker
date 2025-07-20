@@ -1,4 +1,6 @@
 <?php
+session_start();
+
 function login_check($username, $password) {
   $data = file_get_contents(__DIR__ . '/users.json');
   $json = json_decode($data, true);
@@ -6,34 +8,37 @@ function login_check($username, $password) {
 
   foreach ($users as $user) {
     if ($user['username'] === $username && $user['password'] === $password) {
-      return true;
+      return $user;  // ✅ برگردوندن خود user
     }
   }
 
   return false;
 }
 
+$error = null;
+$success = null;
 
-  $error = null;
-  $success = null;
+if ($_SERVER['REQUEST_METHOD'] === 'POST') {
+  $username = $_POST['username'] ?? '';
+  $password = $_POST['password'] ?? '';
 
-  if ($_SERVER['REQUEST_METHOD'] == 'POST') {
-    $username = $_POST['username'] ?? '';
-    $password = $_POST['password'] ?? '';
+  if (empty($username) || empty($password)) {
+    $error = "Username or password cannot be empty..!";
+  } else {
+    $user = login_check($username, $password);
+    if ($user) {
+      $_SESSION['username'] = $user['username'];
+      $_SESSION['role'] = $user['role'];  // 🟢 ذخیره نقش
+      $success = "✅ Logged in successfully! Welcome {$user['username']}";
 
-    if (empty($username) || empty($password)) {
-      $error = "Username or password cannot be empty..!";
+      // ✅ انتقال به داشبورد:
+      header("Location: dashboard.php");
+      exit;
     } else {
-      if (login_check($username, $password)) {
-        $success = "✅ Logged in successfully! Welcome $username";
-        // Optionally you can redirect:
-        // header("Location: dashboard.php");
-        // exit;
-      } else {
-        $error = "❌ Invalid username or password...";
-      }
+      $error = "❌ Invalid username or password...";
     }
   }
+}
 ?>
 
 <!DOCTYPE html>
